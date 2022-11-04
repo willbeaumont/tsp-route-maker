@@ -25,12 +25,19 @@ class TravelingSalesProblem:
         """Returns URL of the shortest route"""
         logger.info("Building solution url")
         url = "https://www.google.com/maps/dir"
+        embed = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyA7NhfpbJTBbS-cHNW78HgBZvqiGBKCqWY"
         index = self.routing.Start(0)
-        origin = f"/{urllib.parse.quote(self.addresses[index])}"
+        origin = urllib.parse.quote(self.addresses[index])
+        first_index = True
+        waypoints = []
         while not self.routing.IsEnd(index):
-            url += f"/{urllib.parse.quote(self.addresses[index])}"
+            stopover = urllib.parse.quote(self.addresses[index])
+            url += f"/{stopover}"
+            if not first_index:
+                waypoints.append(stopover)
             index = self.solution.Value(self.routing.NextVar(index))
-        return url + origin
+        embed += f"&origin={origin}&destination={origin}&waypoints={'|'.join(waypoints)}"
+        return f"{url}/{origin}", embed
 
     def get_manager(self):
         """Entry point of the program."""
