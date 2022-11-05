@@ -35,6 +35,8 @@ class TravelingSalesProblem:
             url += f"/{stopover}"
             if not first_index:
                 waypoints.append(stopover)
+            else:
+                first_index = False
             index = self.solution.Value(self.routing.NextVar(index))
         embed += f"&origin={origin}&destination={origin}&waypoints={'|'.join(waypoints)}"
         return f"{url}/{origin}", embed
