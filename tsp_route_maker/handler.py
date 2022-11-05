@@ -9,6 +9,9 @@ def lambda_handler(event, context):
     logger.info("Reading event addresses")
     try:
         addresses = event["addresses"]
+        if len(addresses) > 10:  # limit to only ten places
+            addresses = addresses[:10]
+
     except Exception as e:
         return {
             'statusCode': 400,
