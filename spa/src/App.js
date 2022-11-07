@@ -136,10 +136,20 @@ function App() {
           if (res.ok) {
             return res.json();
           }
+          console.error("Reponse not OK")
           throw res;
         })
         .then((data) => {
-          setEmbedUrl(JSON.parse(data.body));
+          const parsedData = JSON.parse(data.body)
+          setEmbedUrl(parsedData.urls);
+          
+          if (parsedData.badAddressIndex.length > 0) {
+            const err_msg = "The following were not found and were omitted from the results--specify more details to include.\n"
+            const err_addresses = parsedData.badAddressIndex
+              .map(idx => "  " + cleanAddresses(addresses)[idx])
+              .join("\n")
+            alert(err_msg + err_addresses)
+          }
           setSolution(true);
         })
         .catch((error) => {
