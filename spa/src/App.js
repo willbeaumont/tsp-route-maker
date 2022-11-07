@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import { defaultAddresses, defaultEmbed } from "./defaultAddresses.js";
 
+// iframe to display route recommendation from api
 function EmbedMap(props) {
   return (
     <div className="w-full h-5/6">
@@ -19,6 +20,7 @@ function EmbedMap(props) {
   );
 }
 
+// user entry for addresses
 function AddressInput(props) {
   return (
     <div className="h-5/6">
@@ -45,14 +47,6 @@ function AddressInput(props) {
   );
 }
 
-function Calculating() {
-  return (
-    <div className="w-full h-full grid place-items-center text-white text-5xl text-center">
-      Retrieving the shortest route!
-    </div>
-  );
-}
-
 function Button(props) {
   return (
     <div
@@ -65,6 +59,16 @@ function Button(props) {
   );
 }
 
+// status screen while api runs
+function Calculating() {
+  return (
+    <div className="w-full h-full grid place-items-center text-white text-5xl text-center">
+      Retrieving the shortest route!
+    </div>
+  );
+}
+
+// utility function to return addresses object as a list (exclude emplty input)
 function cleanAddresses(addresses) {
   return addresses
     .map((item) => item.address)
@@ -80,6 +84,7 @@ function App() {
   const endpoint =
     "https://kavlc3z7e6.execute-api.us-west-1.amazonaws.com/prod/";
 
+  // handler to update address values on change
   const addressHandler = (event, id) => {
     let newAddresses = [...addresses];
     newAddresses = newAddresses.map((item) => {
@@ -89,6 +94,7 @@ function App() {
     setAddresses(newAddresses);
   };
 
+  // button handler to navigate back to data entry or clear the entered addresses
   const resetHandler = () => {
     if (solution) {
       setSolution(false);
@@ -102,6 +108,7 @@ function App() {
     }
   };
 
+  // button handler to navigate to maps.google or initiate api call
   const tspHandler = () => {
     if (solution) {
       window.open(embedUrl[0], "_blank", "noreferrer");
@@ -119,6 +126,7 @@ function App() {
     }
   };
 
+  // execute api fetch if calculating true
   useEffect(() => {
     if (calculating) {
       const bodyUpdate = JSON.stringify({

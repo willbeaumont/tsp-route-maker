@@ -6,12 +6,15 @@ from logger import Logger
 logger = Logger(__name__).get_logger()
 
 def lambda_handler(event, context):
+    """
+    event - data passed into lambda, in a post request it is the body
+    context - information about the lambda invocation
+    """
     logger.info("Reading event addresses")
     try:
         addresses = event["addresses"]
         if len(addresses) > 10:  # limit to only ten places
             addresses = addresses[:10]
-
     except Exception as e:
         return {
             'statusCode': 400,

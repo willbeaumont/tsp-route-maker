@@ -22,7 +22,7 @@ class TravelingSalesProblem:
         self.solution = self.solve()
 
     def map_urls(self):
-        """Returns URL of the shortest route"""
+        """Returns URL of the shortest route AND embed url - should probably separate"""
         logger.info("Building solution url")
         url = "https://www.google.com/maps/dir"
         embed = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyA7NhfpbJTBbS-cHNW78HgBZvqiGBKCqWY"
@@ -43,7 +43,6 @@ class TravelingSalesProblem:
         return f"{url}/{origin}", embed
 
     def get_manager(self):
-        """Entry point of the program."""
         logger.info("Getting manager")
         # Create the routing index manager.
         return pywrapcp.RoutingIndexManager(

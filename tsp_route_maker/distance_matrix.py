@@ -11,12 +11,12 @@ class DistanceMatrix:
     def __init__(self, addresses, is_distance_type):
         logger.info("Initializing DistanceMatrix")
         self.addresses = self.clean(addresses)
-        self.api_key = get_secret()
-        self.is_distance_type = is_distance_type
+        self.api_key = get_secret()  # using aws to store api key
+        self.is_distance_type = is_distance_type  # option false:travel time based matrix
     
     @staticmethod
     def clean(dirty_addresses):
-        """Delete ',', replace spaces with '+', and encode special characters"""
+        """Delete ',', replace spaces with '+', and encode special characters for maps api"""
         return [urllib.parse.quote_plus(a.replace(",", "")) for a in dirty_addresses]
 
     def create(self):
@@ -80,7 +80,9 @@ class DistanceMatrix:
         matrix = []
         bad_row = []
         for row_index, row in enumerate(response['rows']):
+            # added error check for data returned by distance api
             row_list = [row['elements'][j][matrix_type]['value'] for j in range(len(row['elements'])) if row['elements'][j]['status']=='OK']
+            # capture the bad address index else record distances
             if len(row_list) == 0:
                 bad_row.append(row_index)
             else:
