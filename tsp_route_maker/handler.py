@@ -29,5 +29,8 @@ def lambda_handler(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(tsp.maps_url())
+        'body': json.dumps({
+            "urls": tsp.map_urls(),
+            "badAddressIndex": tsp.bad_addresses
+        })
     }

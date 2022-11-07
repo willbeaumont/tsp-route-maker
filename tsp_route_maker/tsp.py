@@ -13,7 +13,7 @@ class TravelingSalesProblem:
     def __init__(self, addresses):
         logger.info("Initializing TravelingSalesProblem")
         self.addresses = addresses
-        self.distance_matrix = DistanceMatrix(addresses=addresses, is_distance_type=True).create()
+        self.distance_matrix, self.bad_addresses = DistanceMatrix(addresses=addresses, is_distance_type=True).create()
         logger.info(f"Length of distance matrix: {len(self.distance_matrix)}")
         self.num_vehicles = 1
         self.depot = 0
@@ -21,17 +21,18 @@ class TravelingSalesProblem:
         self.routing = self.get_routing()
         self.solution = self.solve()
 
-    def maps_url(self):
+    def map_urls(self):
         """Returns URL of the shortest route"""
         logger.info("Building solution url")
         url = "https://www.google.com/maps/dir"
         embed = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyA7NhfpbJTBbS-cHNW78HgBZvqiGBKCqWY"
         index = self.routing.Start(0)
-        origin = urllib.parse.quote(self.addresses[index])
+        route_addresses = [a for i, a in enumerate(self.addresses) if i not in self.bad_addresses]
+        origin = urllib.parse.quote(route_addresses[index])
         first_index = True
         waypoints = []
         while not self.routing.IsEnd(index):
-            stopover = urllib.parse.quote(self.addresses[index])
+            stopover = urllib.parse.quote(route_addresses[index])
             url += f"/{stopover}"
             if not first_index:
                 waypoints.append(stopover)

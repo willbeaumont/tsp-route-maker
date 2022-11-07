@@ -30,18 +30,23 @@ class DistanceMatrix:
         q, r = divmod(num_addresses, max_rows)
         dest_addresses = self.addresses
         distance_matrix = []
+        no_data_rows = []
         # Send q requests, returning max_rows rows per request.
         for i in range(q):
             origin_addresses = self.addresses[i * max_rows: (i + 1) * max_rows]
             response = self.send_request(origin_addresses, dest_addresses)
-            distance_matrix += self.build_matrix(response)
+            matrix_part, bad_rows = self.build_matrix(response)
+            distance_matrix += matrix_part
+            no_data_rows += bad_rows
 
         # Get the remaining remaining r rows, if necessary.
         if r > 0:
             origin_addresses = self.addresses[q * max_rows: q * max_rows + r]
             response = self.send_request(origin_addresses, dest_addresses)
-            distance_matrix += self.build_matrix(response)
-        return distance_matrix
+            matrix_part, bad_rows = self.build_matrix(response)
+            distance_matrix += matrix_part
+            no_data_rows += bad_rows
+        return distance_matrix, no_data_rows
 
     def send_request(self, origin_addresses, dest_addresses):
         """ Build and send request for the given origin and destination addresses."""
@@ -73,7 +78,11 @@ class DistanceMatrix:
         matrix_type = 'distance' if self.is_distance_type else 'duration'
         
         matrix = []
-        for row in response['rows']:
-            row_list = [row['elements'][j][matrix_type]['value'] for j in range(len(row['elements']))]
-            matrix.append(row_list)
-        return matrix
+        bad_row = []
+        for row_index, row in enumerate(response['rows']):
+            row_list = [row['elements'][j][matrix_type]['value'] for j in range(len(row['elements'])) if row['elements'][j]['status']=='OK']
+            if len(row_list) == 0:
+                bad_row.append(row_index)
+            else:
+                matrix.append(row_list)
+        return matrix, bad_row
