@@ -9,11 +9,14 @@ from logger import Logger
 
 logger = Logger(__name__).get_logger()
 
+
 class TravelingSalesProblem:
     def __init__(self, addresses):
         logger.info("Initializing TravelingSalesProblem")
         self.addresses = addresses
-        self.distance_matrix, self.bad_addresses = DistanceMatrix(addresses=addresses, is_distance_type=True).create()
+        self.distance_matrix, self.bad_addresses = DistanceMatrix(
+            addresses=addresses, is_distance_type=True
+        ).create()
         logger.info(f"Length of distance matrix: {len(self.distance_matrix)}")
         self.num_vehicles = 1
         self.depot = 0
@@ -27,7 +30,9 @@ class TravelingSalesProblem:
         url = "https://www.google.com/maps/dir"
         embed = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyA7NhfpbJTBbS-cHNW78HgBZvqiGBKCqWY"
         index = self.routing.Start(0)
-        route_addresses = [a for i, a in enumerate(self.addresses) if i not in self.bad_addresses]
+        route_addresses = [
+            a for i, a in enumerate(self.addresses) if i not in self.bad_addresses
+        ]
         origin = urllib.parse.quote(route_addresses[index])
         first_index = True
         waypoints = []
@@ -39,16 +44,14 @@ class TravelingSalesProblem:
             else:
                 first_index = False
             index = self.solution.Value(self.routing.NextVar(index))
-        embed += f"&origin={origin}&destination={origin}&waypoints={'|'.join(waypoints)}"
+        embed += f"&mode=walking&origin={origin}&destination={origin}&waypoints={'|'.join(waypoints)}"
         return f"{url}/{origin}", embed
 
     def get_manager(self):
         logger.info("Getting manager")
         # Create the routing index manager.
         return pywrapcp.RoutingIndexManager(
-            len(self.distance_matrix),
-            self.num_vehicles, 
-            self.depot
+            len(self.distance_matrix), self.num_vehicles, self.depot
         )
 
     def get_routing(self):
@@ -81,7 +84,7 @@ class TravelingSalesProblem:
         search_parameters.log_search = True
 
         return search_parameters
-    
+
     def solve(self):
         logger.info("Solving")
         # Solve the problem.
